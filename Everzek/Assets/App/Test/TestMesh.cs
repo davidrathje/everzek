@@ -10,9 +10,9 @@ public class TestMesh : MonoBehaviour
     public Transform cube;
     //change these params in the inspector on textscene
     public string GamePath = @"D:\games\everquest\EQ Vanilla UF\";
-    public string ArchiveName = "snd1.pfs";
-    public bool LoadFirstSound = false;
-    public string SoundToLoad = "boatbell.wav";
+    public string ArchiveName = "airplane.s3d";
+    public bool LoadFirstMesh = true;
+    public string MeshToLoad = "airplane.wld";
 
     //Loads the first bmp found in the pack, by default uses befallen.s3d
     void Start()
@@ -22,27 +22,24 @@ public class TestMesh : MonoBehaviour
         Debug.Log("File count: " + archive.Files.Count);
 
         string extension = "";
-
-        AudioSource asource = cube.GetComponent<AudioSource>();
+        
         //Vector3[] newVertices;
         //Vector2[] newUV;
         //int[] newTriangles;
 
         Mesh mesh = new Mesh();
-        cube.GetComponent<MeshFilter>().mesh = CreateMesh(1, 2);        
+        cube.GetComponent<MeshFilter>().mesh = CreateMesh(1, 2);
         //mesh.vertices = newVertices;
         //mesh.uv = newUV;
         //mesh.triangles = newTriangles;
-
-        return;
+        
 
         foreach (var file in archive.Files)
-        {
-
-
-            if (!LoadFirstSound)
+        {        
+//            Debug.Log(file.Key);
+            if (!LoadFirstMesh)
             {
-                if (file.Key.ToLower() == SoundToLoad.ToLower())
+                if (file.Key.ToLower() == MeshToLoad.ToLower())
                 {
                     byte[] contents = file.Value.GetContents();
                     return;
@@ -51,16 +48,31 @@ public class TestMesh : MonoBehaviour
             }
 
             extension = System.IO.Path.GetExtension(file.Key);
-            if (extension == ".wav")
+            if (extension == ".wld")
             {
+                Debug.Log("Loading " + file.Key);
                 byte[] contents = file.Value.GetContents();
+
+                try
+                {
+                    Wld wld = new Wld(contents);
+                } catch (Exception e)
+                {
+                    Debug.LogError("Failed to load World: " + e.Message);
+                    return;
+                }
+                
                 return;
             }
-            continue;
-            //Debug.Log(file.Key);            
+            continue;    
         }
         Debug.Log("Done");
     }
+
+
+
+
+    //just a test function on creating mesh in unity
     Mesh CreateMesh(float width, float height)
     {
         Mesh m = new Mesh();
