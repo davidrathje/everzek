@@ -29,7 +29,7 @@ public class TestLoading : MonoBehaviour {
         }
         
         Debug.Log("Loading s3d");
-        var archive = EQArchive.Load(GamePath);
+        var archive = EQArchive.Load(GamePath + ArchiveName);
         Debug.Log("File count: " + archive.Files.Count);
 
         string extension = "";

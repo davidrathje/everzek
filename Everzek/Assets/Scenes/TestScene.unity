@@ -372,7 +372,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cube: {fileID: 618671197}
-  GamePath: D:\games\everquest\EQ Vanilla UF\befallen.s3d
+  GamePath: D:\games\everquest\EQ Vanilla UF\
   ArchiveName: befallen.s3d
   LoadFirstTexture: 0
   TextureToLoad: rock.bmp
