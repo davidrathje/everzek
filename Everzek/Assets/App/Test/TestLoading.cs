@@ -52,7 +52,7 @@ public class TestLoading : MonoBehaviour {
             }
 
             extension = System.IO.Path.GetExtension(file.Key);
-            if (extension == ".bmp")
+            if (extension == ".bmp" || extension == ".dds")
             {
                 Debug.Log("Bmp file: "+ file.Key);
                 byte[] contents = file.Value.GetContents();
