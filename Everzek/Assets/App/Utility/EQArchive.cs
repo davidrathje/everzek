@@ -1008,7 +1008,6 @@ public class EQArchiveFile
         try
         {
             UInt32 _chunkSize = (_sizeUncompressed < MAX_BLOCK_SIZE) ? _sizeUncompressed : MAX_BLOCK_SIZE;
-            byte[] _chunkBytes = new byte[_chunkSize];
 
             while (this.Size.Uncompressed < Data.Length)
             {
