@@ -1,0 +1,2 @@
+# everzek
+Everquest Zek Client
