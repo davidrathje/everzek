@@ -5,6 +5,7 @@ using UnityEngine;
 
 //Using https://github.com/daeken/OpenEQ/blob/master/converter/wld.py for inspiration.
 
+// Wld is used to load *.wld files and manage the details within it.
 public class Wld  {
 
     bool old = false;
@@ -31,7 +32,6 @@ public class Wld  {
             var type = UInt();
             var nameoff = Int();
             string name = GetString(-nameoff);
-
         }
     }
 
@@ -50,6 +50,7 @@ public class Wld  {
 
     private string GetString(int offset)
     {
+        if (offset == 0x1000000) return "";
         return "";
         //self.stringTable[i:].split('\0', 1)[0]
     }
