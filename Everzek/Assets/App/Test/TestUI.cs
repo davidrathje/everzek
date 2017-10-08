@@ -27,7 +27,7 @@ public class TestUI : MonoBehaviour {
         obj = LoadTGA(GamePath + @"uifiles\default\EQLS_WndBorder_04.tga", new Vector3(-256, -127));
         obj = LoadTGA(GamePath + @"uifiles\default\EQLS_WndBorder_05.tga", new Vector3(-2, -127));
         obj = LoadTGA(GamePath + @"uifiles\default\EQLS_WndBorder_06.tga", new Vector3(252, -127));
-
+        Debug.Log(obj);
         var bg1 = new GameObject("bg1", typeof(RectTransform));
         bg1.AddComponent<CanvasRenderer>();
         var text = bg1.AddComponent<Text>();

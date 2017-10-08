@@ -35,7 +35,7 @@ public class TestSound : MonoBehaviour
             {
                 if (file.Key.ToLower() == SoundToLoad.ToLower())
                 {
-                    byte[] contents = file.Value.GetContents();
+                    //byte[] contents = file.Value.GetContents();
                     /*
                     WAV wav = new WAV(contents);
                     //asource.clip.SetData(wav.LeftChannel, 0);

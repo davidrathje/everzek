@@ -28,41 +28,41 @@ namespace OpenEQ.Network {
             switch((ZoneOp) packet.Opcode) {
                 case ZoneOp.PlayerProfile:
                     var player = packet.Get<PlayerProfile>();
-                 //   UnityEngine.Debug.Log(player);
+                   UnityEngine.Debug.Log("Profile:" +player);
                     break;
 
                 case ZoneOp.CharInventory:
-                    var inventory = packet.Get<CharInventory>();
+                  //  var inventory = packet.Get<CharInventory>();
                   //  UnityEngine.Debug.Log("Inventory: "+inventory);
                     break;
 
                 case ZoneOp.TimeOfDay:
-                    var timeofday = packet.Get<TimeOfDay>();
+                  //  var timeofday = packet.Get<TimeOfDay>();
                   //  UnityEngine.Debug.Log(timeofday);
                     break;
 
                 case ZoneOp.TaskActivity:
-                    var activity = packet.Get<TaskActivity>();
+                  //  var activity = packet.Get<TaskActivity>();
                 //    UnityEngine.Debug.Log(activity);
                     break;
 
                 case ZoneOp.TaskDescription:
-                    var desc = packet.Get<TaskDescription>();
+                  //  var desc = packet.Get<TaskDescription>();
                 //    UnityEngine.Debug.Log(desc);
                     break;
 
                 case ZoneOp.CompletedTasks:
-                    var comp = packet.Get<CompletedTasks>();
+                  //  var comp = packet.Get<CompletedTasks>();
                  //   UnityEngine.Debug.Log(comp);
                     break;
 
                 case ZoneOp.XTargetResponse:
-                    var xt = packet.Get<XTarget>();
+                   // var xt = packet.Get<XTarget>();
                  //   UnityEngine.Debug.Log(xt);
                     break;
 
                 case ZoneOp.Weather:
-                    var weather = packet.Get<Weather>();
+                   // var weather = packet.Get<Weather>();
                 //    UnityEngine.Debug.Log(weather);
 
                     if(entering)
@@ -70,12 +70,12 @@ namespace OpenEQ.Network {
                     break;
 
                 case ZoneOp.TributeTimer:
-                    var timer = packet.Get<TributeTimer>();
+                    //var timer = packet.Get<TributeTimer>();
                  //   UnityEngine.Debug.Log(timer);
                     break;
 
                 case ZoneOp.TributeUpdate:
-                    var update = packet.Get<TributeInfo>();
+                   // var update = packet.Get<TributeInfo>();
                  //   UnityEngine.Debug.Log(update);
                     break;
 
@@ -97,7 +97,7 @@ namespace OpenEQ.Network {
                     break;
 
                 case ZoneOp.SendFindableNPCs:
-                    var npc = packet.Get<FindableNPC>();
+                  //  var npc = packet.Get<FindableNPC>();
                  //   UnityEngine.Debug.Log(npc);
                     break;
 

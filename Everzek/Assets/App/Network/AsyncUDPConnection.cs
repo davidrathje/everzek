@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 namespace OpenEQ.Network {
     public class AsyncUDPConnection {
         UdpClient client;
-        string host;
-        int port;
+        public string host;
+        public int port;
 
         public AsyncUDPConnection(string host, int port) {
             this.host = host;

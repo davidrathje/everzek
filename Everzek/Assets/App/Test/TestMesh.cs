@@ -27,7 +27,7 @@ public class TestMesh : MonoBehaviour
         //Vector2[] newUV;
         //int[] newTriangles;
 
-        Mesh mesh = new Mesh();
+        //Mesh mesh = new Mesh();
         cube.GetComponent<MeshFilter>().mesh = CreateMesh(1, 2);
         //mesh.vertices = newVertices;
         //mesh.uv = newUV;
@@ -41,7 +41,7 @@ public class TestMesh : MonoBehaviour
             {
                 if (file.Key.ToLower() == MeshToLoad.ToLower())
                 {
-                    byte[] contents = file.Value.GetContents();
+                    //byte[] contents = file.Value.GetContents();
                     return;
                 }
                 continue;
@@ -56,6 +56,7 @@ public class TestMesh : MonoBehaviour
                 try
                 {
                     Wld wld = new Wld(contents);
+                    Debug.Log(wld);
                 } catch (Exception e)
                 {
                     Debug.LogError("Failed to load World: " + e.Message);

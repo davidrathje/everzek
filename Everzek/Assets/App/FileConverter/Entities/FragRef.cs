@@ -60,7 +60,7 @@ namespace OpenEQ.FileConverter.Entities
 
         public IEnumerable<string> Resolve()
         {
-            var outList = new List<string>();// {Value};
+            //var outList = new List<string>();// {Value};
             var tmp = Value;
 
             if (Value is string[])

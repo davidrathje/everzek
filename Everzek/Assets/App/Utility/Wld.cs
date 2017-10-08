@@ -8,11 +8,11 @@ using UnityEngine;
 // Wld is used to load *.wld files and manage the details within it.
 public class Wld  {
 
-    bool old = false;
+    public bool old = false;
     int offset = 0;
     byte[] data;
-    string stringTable;
-    bool baked = false;
+    public string stringTable;
+    public bool baked = false;
     List<int> frags;
 
     public Wld(byte[] contents)
@@ -28,10 +28,14 @@ public class Wld  {
         Debug.Log("Loading " + fragCount + " frags");
         for (int i = 0; i < fragCount; i++)
         {
-            var size = UInt();
-            var type = UInt();
+
+            //var size = UInt();
+            UInt(); //size
+            //var type = UInt();
+            UInt(); //type
             var nameoff = Int();
-            string name = GetString(-nameoff);
+            GetString(-nameoff); //string name = 
+
         }
     }
 

@@ -69,7 +69,7 @@
 
                 foreach (var mesh in obj.Meshes)
                 {
-                    var mat = new Tuple<List<string>, int>(mesh.Material.filenames, mesh.Material.Flags);
+                    //var mat = new Tuple<List<string>, int>(mesh.Material.filenames, mesh.Material.Flags);
                     var key = $"{string.Join(",", mesh.Material.filenames)}{mesh.Material.Flags}";
                     if (!matmeshes.ContainsKey(key))
                         matmeshes.Add(key, new List<Mesh>());

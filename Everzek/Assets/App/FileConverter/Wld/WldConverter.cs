@@ -639,19 +639,19 @@ namespace OpenEQ.FileConverter.Wld
 
         private FragRef Frag23PolyHDef(BinaryReader input, string name, uint size)
         {
-            var d = input.ReadBytes((int)size);
+           // var d = input.ReadBytes((int)size);
             return null;
         }
 
         private FragRef Frag24PolyHDef(BinaryReader input, string name, uint size)
         {
-            var d = input.ReadBytes((int)size);
+            //var d = input.ReadBytes((int)size);
             return null;
         }
 
         private FragRef Frag33(BinaryReader input, string name)
         {
-            var a = 1;
+           // var a = 1;
             //FRAGMENT_FUNC(Data21) {
             //    struct_Data21* data;
             //    long count = *((long*)buf);
@@ -676,7 +676,7 @@ namespace OpenEQ.FileConverter.Wld
 
         private FragRef Frag34(BinaryReader input, string name)
         {
-            var a = 1;
+            //var a = 1;
             // UNKNOWN
             //FRAGMENT_FUNC(Data22) {
             //    int pos;
@@ -918,7 +918,7 @@ namespace OpenEQ.FileConverter.Wld
                     eldata[input.ReadUInt32()] = input.ReadSingle();
                 }
 
-                var aaa = 1;
+                //var aaa = 1;
             }
 
             var frags3 = input.ReadInt32(size2);

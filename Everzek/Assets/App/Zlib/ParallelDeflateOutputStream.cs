@@ -1155,8 +1155,7 @@ namespace Ionic.Zlib
             // compress one buffer
             WorkItem workitem = (WorkItem) wi;
             try
-            {
-                int myItem = workitem.index;
+            {   
                 Ionic.Crc.CRC32 crc = new Ionic.Crc.CRC32();
 
                 // calc CRC on the buffer
@@ -1205,7 +1204,7 @@ namespace Ionic.Zlib
             int rc= 0;
             compressor.ResetDeflate();
             compressor.NextIn = 0;
-
+            if (rc != 0) return false;
             compressor.AvailableBytesIn = workitem.inputBytesAvailable;
 
             // step 1: deflate the buffer

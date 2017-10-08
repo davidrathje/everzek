@@ -17,7 +17,7 @@ namespace OpenEQ.Network {
         bool IsConnected = false;
         float lastRecvSendTime;
         AsyncUDPConnection conn;
-        uint sessionID;
+        public uint sessionID;
 
         ushort lastAckRecieved, lastAckSent;
         bool resendAck = false;
