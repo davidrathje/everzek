@@ -56,7 +56,7 @@ public class Wld  {
     }
     private string DecodeString(uint hashlen)
     {
-        offset += (int)hashlen;
+        offset += (int)hashlen; 
         return "";
        // return ''.join(chr(ord(x) ^ Wld.xorkey[i % len(Wld.xorkey)]) for i, x in enumerate(s))
     }
