@@ -28,7 +28,7 @@ namespace OpenEQ.Network {
             switch((ZoneOp) packet.Opcode) {
                 case ZoneOp.PlayerProfile:
                     var player = packet.Get<PlayerProfile>();
-                    //Debug.Log(player);
+                    UnityEngine.Debug.Log(player);
                     break;
 
                 case ZoneOp.CharInventory:
