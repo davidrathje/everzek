@@ -9,14 +9,18 @@ public class TestNetwork : MonoBehaviour {
     LoginStream login;
     WorldStream world;
     ZoneStream zone;
+    
     bool isInitialized = false;
 
+    public CharacterSelectEntry characterSelected;
+    public ServerListElement serverSelected;
 
     public string LoginUrl = "login.eqemulator.net";
     public int LoginPort = 5998;
     public string Username;
     public string Password;
-    public string ServerToJoin = "[R] RebuildEQ.com - Check forums to be a tester!";    
+    public string ServerToJoin = "[R] RebuildEQ.com - Check forums to be a tester!";
+    //or, [R] Shin's RebuildEQ TEST Server
     public string CharacterName = "";
 
 
@@ -58,14 +62,19 @@ public class TestNetwork : MonoBehaviour {
         list = list.OrderByDescending(a => a.ServerListID).ThenBy(b => b.Status).ThenByDescending(c => c.PlayersOnline).ThenBy(d => d.Longname).ToList();
 
         //var i = 0;
-
+       
         foreach (var server in list)
         {
-            Debug.Log(server.Longname);
+            Debug.Log(server.Longname + " - " + server.WorldIP);
             if (server.Longname.Equals(ServerToJoin))
             {
+                serverSelected = server;
                 Debug.Log("Joining " + ServerToJoin);
-                login.Play(server);
+                if (serverSelected.WorldIP.Equals("127.0.0.1")) {
+                    Debug.Log("Changing world IP since it's localhost");
+                    serverSelected.WorldIP = "70.189.224.166";
+                }
+                login.Play(serverSelected);
             }
             //Debug.Log(server.Longname);
             /*serverGrid.RowDefinitions.Add(new StripDefinition(StripType.Fixed, 25));
@@ -117,6 +126,8 @@ public class TestNetwork : MonoBehaviour {
             login.PlaySuccess -= OnPlaySuccess;
             login.LoginSuccess -= OnLoginSuccess;
             login.ServerList -= OnServerList;
+
+            login.Disconnect();
         }
         login = null;
 
@@ -125,8 +136,16 @@ public class TestNetwork : MonoBehaviour {
             world.CharacterList -= OnCharacterList;
             world.ChatServerList -= OnChatServerList;
             world.ZoneServer -= OnZoneServer;
+
+            world.Disconnect();
         }
         world = null;
+
+        if (zone != null)
+        {
+            zone.Disconnect();
+        }
+        zone = null;        
     }
 
     void OnCharacterList(object sender, List<CharacterSelectEntry> chars)
@@ -140,14 +159,8 @@ public class TestNetwork : MonoBehaviour {
             if (character.Name == CharacterName)
             {
                 isInitialized = true;
-                Debug.Log("Found character " + CharacterName + ", class " + character.Class + ", entering world...");
-                world.ResetAckForZone();
-                world.SendEnterWorld(new EnterWorld
-                {
-                    Name = CharacterName,
-                    GoHome = false,
-                    Tutorial = false
-                });
+                Debug.Log("Found character " + CharacterName + ", class " + character.Class + ", ready to enter world.");
+                characterSelected = character;              
             }
             /* charGrid.RowDefinitions.Add(new StripDefinition(StripType.Fixed, 25));
              var namefield = new TextBlock
@@ -217,6 +230,18 @@ public class TestNetwork : MonoBehaviour {
             Debug.Log("Connecting to zone " + server.Host + ", " + server.Port + ", as character " + CharacterName);
             zone = new ZoneStream(server.Host, server.Port, CharacterName);
             InitializeZone();
+    }
+
+    public void DoWorldJoin()
+    {
+        //world.ResetAckForZone();
+        world.SendEnterWorld(new EnterWorld
+        {
+            Name = characterSelected.Name,
+            GoHome = false,
+            Tutorial = false
+        });
+        Debug.Log("Sending EnterWorld event...");
     }
 
     private void InitializeWorld()

@@ -11,10 +11,11 @@ namespace OpenEQ.Network {
         public bool Compressing, Validating;
         public byte[] CRCKey;
         public ushort OutSequence, InSequence;
+        
 
         public bool SendKeepalives = false;
+        bool IsConnected = false;
         float lastRecvSendTime;
-
         AsyncUDPConnection conn;
         uint sessionID;
 
@@ -24,9 +25,9 @@ namespace OpenEQ.Network {
 
         public EQStream(string host, int port) {
             conn = new AsyncUDPConnection(host, port);
-
+            IsConnected = true;
             Task.Factory.StartNew(CheckerAsync, TaskCreationOptions.LongRunning);
-            Task.Factory.StartNew(ReceiverAsync, TaskCreationOptions.LongRunning);
+            Task.Factory.StartNew(ReceiverAsync, TaskCreationOptions.LongRunning);            
         }
 
         protected void Connect() {
@@ -36,7 +37,12 @@ namespace OpenEQ.Network {
             lastAckSent = 0;
             sentPackets = new Packet[65536];
             futurePackets = new Packet[65536];
+        }
 
+        public void Disconnect()
+        {
+            if (!IsConnected) return;
+            IsConnected = false;
         }
 
         public void SendSessionRequest() {
@@ -55,7 +61,7 @@ namespace OpenEQ.Network {
         }
 
         async Task CheckerAsync() {
-            while(true) {
+            while(true && IsConnected) {
                 if(sentPackets != null) {
                     lock(sentPackets) {
                         var last = lastAckRecieved + 1;
@@ -86,10 +92,11 @@ namespace OpenEQ.Network {
                 }
                 await Task.Delay(100);
             }
+            UnityEngine.Debug.Log("Ending CheckerAsync");
         }
 
         async Task ReceiverAsync() {
-            while(true) {
+            while(true && IsConnected) {
                 var data = await conn.Receive();
                 lastRecvSendTime = Time.Now;
 
@@ -103,6 +110,7 @@ namespace OpenEQ.Network {
                 if(packet.Valid)
                     ProcessSessionPacket(packet);
             }
+            UnityEngine.Debug.Log("Ending ReceiverAsync");
         }
 
         void ProcessSessionPacket(Packet packet) {
