@@ -11,6 +11,11 @@ namespace OpenEQ.Network {
 
 
         public event EventHandler<Spawn> ZoneEntry;
+        public event EventHandler<DeleteSpawn> DeleteSpawn;
+        public event EventHandler<ChannelMessage> ChannelMessage;
+        public event EventHandler<SpawnHPUpdate> SpawnHPUpdate;
+        public event EventHandler<SpawnPositionUpdate> SpawnPositionUpdate;
+        public event EventHandler<PlayerPositionUpdateServer> PlayerPositionUpdateServer;
 
         public ZoneStream(string host, int port, string charName) : base(host, port) {
             SendKeepalives = true;
@@ -25,6 +30,17 @@ namespace OpenEQ.Network {
             Send(packet);
 
             Send(AppPacket.Create(ZoneOp.ZoneEntry, new ClientZoneEntry(charName)));
+        }
+
+        //Camp requests have a 29000ms camp timer
+        public void SendCamp()
+        {
+           Send(AppPacket.Create(ZoneOp.Camp));
+        }
+
+        public void SendMessage()
+        {
+            Send(AppPacket.Create(ZoneOp.ChannelMessage, new ChannelMessage("Shin", "Xuluu", 0, 0, 0, "Hello")));
         }
 
         protected override void HandleAppPacket(AppPacket packet) {
@@ -106,7 +122,8 @@ namespace OpenEQ.Network {
                     break;
 
                 case ZoneOp.ClientUpdate:
-                  // UnityEngine.Debug.Log("ClientUpdate");
+                    UnityEngine.Debug.Log("Sending Client Update");
+                    PlayerPositionUpdateServer.Invoke(this, packet.Get<PlayerPositionUpdateServer>());
                     break;
                 case ZoneOp.SpawnAppearance:
                     break;
@@ -117,21 +134,50 @@ namespace OpenEQ.Network {
                 case ZoneOp.Death:
                     break;
                 case ZoneOp.DeleteSpawn:
+                    DeleteSpawn.Invoke(this, packet.Get<DeleteSpawn>());
                     break;
-
                 case ZoneOp.PlayerStateAdd:
                     break;
                 case ZoneOp.PlayerStateRemove:
                     break;
                 case ZoneOp.ChannelMessage:
+                    ChannelMessage.Invoke(this, packet.Get<ChannelMessage>());
                     break;
 
                 case ZoneOp.HPUpdate:
-                 //   UnityEngine.Debug.Log("HpUpdate");
+                    SpawnHPUpdate.Invoke(this, packet.Get<SpawnHPUpdate>());
                     break;
                 case ZoneOp.ManaUpdate:
                     break;
                 case ZoneOp.EnduranceUpdate:
+                    break;
+                case ZoneOp.SpawnPositionUpdate:
+                    SpawnPositionUpdate.Invoke(this, packet.Get<SpawnPositionUpdate>());
+                    break;
+                case ZoneOp.BuffCreate:
+                    break;
+                case ZoneOp.AltCurrency:
+                    break;
+                case ZoneOp.WearChange:
+                    break;
+                case ZoneOp.GuildMOTD:
+                    break;
+                case ZoneOp.RaidUpdate:
+                    break;
+                case ZoneOp.ExpUpdate:
+                    break;
+                case ZoneOp.WorldObjectsSent:
+                    break;
+                case 0x0:
+                    //This is a catch for an empty OP that happens.. dunno
+                    break;
+                case ZoneOp.SendAAStats:
+                    break;
+                case ZoneOp.SendZonepoints:
+                    break;
+                case ZoneOp.GroundSpawn:
+                    break;
+                case ZoneOp.SpawnDoor:
                     break;
                 default:
                     UnityEngine.Debug.Log($"Unhandled packet in ZoneStream: {(ZoneOp) packet.Opcode} (0x{packet.Opcode:X04})");

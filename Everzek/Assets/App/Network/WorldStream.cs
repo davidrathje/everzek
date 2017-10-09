@@ -70,7 +70,7 @@ namespace OpenEQ.Network {
                     UnityEngine.Debug.Log("World: ZoneServerInfo");
                     break;
                 case WorldOp.SetChatServer:
-                    UnityEngine.Debug.Log("World: SetChatSErver");
+                    UnityEngine.Debug.Log("World: SetChatServer");
                     break;
                 case WorldOp.SetChatServer2:
                     ChatServerList?.Invoke(this, packet.Data);

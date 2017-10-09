@@ -441,6 +441,10 @@ zone:
       - bool<uint8>: IsMercenary
       - skip[28]: unknown21
 
+    DeleteSpawn:
+      - uint32: SpawnID #Spawn ID to delete
+      - uint8: Decay #0 = vanish immediately, 1 = 'Decay' sparklies for corpses.
+
     FindableNPC:
       - bool<uint32>: Remove
       - uint32: EntityID
@@ -449,6 +453,14 @@ zone:
       - uint32: Race
       - uint8: Class
       - skip[3]: unknown109
+
+    ChannelMessage:
+      - string[64]: TargetName
+      - string[64]: Sender
+      - uint32: Language
+      - uint32: ChannelNumber
+      - uint32: SkillInLanguage
+      - varstring: Message
 
     Bind:
       - uint32: ZoneID
@@ -514,6 +526,15 @@ zone:
 
     Autoconsent:
       - bool<uint8>: Group, Raid, Guild
+
+    SpawnHPUpdate:
+      - uint32: CurrentHP
+      - int32: MaxHP
+      - int16: SpawnID
+
+    SpawnHPUpdate2:
+      - int16: SpawnID
+      - uint8: HPPercent
 
     PlayerProfile:
       - uint32: checksum
@@ -615,3 +636,41 @@ zone:
       - bool<uint32>: ShowHelm
       - uint32: RestTimer
       - skip[1036]: unknown25596
+
+    PlayerPositionUpdateClient:
+      - uint16: SpawnID
+      - uint16: Sequence
+      - float: Y
+      - float: DeltaZ
+      - float: DeltaX
+      - float: DeltaY
+      - int32: Animation #animation:10,    // animation delta_heading:10, // change in heading padding0020:12;   // ***Placeholder (mostly 1)
+      - float: X
+      - float: Z
+      - uint16: Heading #heading:12, padding0004:4
+      - uint8: Uknown0006
+
+    PlayerPositionUpdateServer:
+      - uint16: SpawnID
+      - uint16: SpawnID2
+      - int16: Padding0004
+      - int16: Y
+      - uint16: Padding01            
+      - int16: DeltaX
+      - int16: DeltaHeading
+      - int16: Padding0008
+      - int16: DeltaY
+      - int16: Z
+      - int16: X
+      - int16: Animation
+      - int16: Padding0016
+      - uint16: Heading
+      - int16: DeltaZ
+      - int16: Padding0020
+
+    SpawnPositionUpdate:
+      - uint16: SpawnID
+      - SpawnPosition: Position #/*0002*/ uint64    y_pos:19, z_pos:19, x_pos:19, padding002:7;
+      - uint16: heading
+      - int16: padding010
+

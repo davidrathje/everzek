@@ -29,7 +29,10 @@ public class TestNetwork : MonoBehaviour {
 
     public Dictionary<uint, GameObject> SpawnPool = new Dictionary<uint, GameObject>();
     public List<Spawn> SpawnQueue = new List<Spawn>();
-
+    public List<DeleteSpawn> SpawnDeleteQueue = new List<DeleteSpawn>();
+    public List<SpawnHPUpdate> SpawnHPUpdateQueue = new List<SpawnHPUpdate>();
+    public List<SpawnPositionUpdate> SpawnPositionUpdateQueue = new List<SpawnPositionUpdate>();
+    public List<PlayerPositionUpdateServer> PlayerPositionUpdateServerQueue = new List<PlayerPositionUpdateServer>();
 
     // Use this for initialization
     void Start () {
@@ -107,6 +110,7 @@ public class TestNetwork : MonoBehaviour {
             };*/
         }
     }
+
     void OnPlaySuccess(object sender, ServerListElement? server)
     {
         Debug.Log("Play Response: " + server);
@@ -151,7 +155,15 @@ public class TestNetwork : MonoBehaviour {
 
         if (zone != null)
         {
+            //try to camp out
+            zone.SendCamp();
+
             zone.ZoneEntry -= OnZoneEntry;
+            zone.DeleteSpawn -= OnDeleteSpawn;
+            zone.ChannelMessage -= OnChannelMessage;
+            zone.SpawnHPUpdate -= OnSpawnHPUpdate;
+            zone.SpawnPositionUpdate -= OnSpawnPositionUpdate;
+            zone.PlayerPositionUpdateServer -= OnPlayerPositionUpdateServer;
             zone.Disconnect();
         }
         zone = null;        
@@ -161,12 +173,38 @@ public class TestNetwork : MonoBehaviour {
     {
         SpawnQueue.Add(spawn);
     }
+
+    void OnSpawnPositionUpdate(object sender, SpawnPositionUpdate spawnPositionUpdate)
+    {
+        SpawnPositionUpdateQueue.Add(spawnPositionUpdate);
+    }
+
+    void OnDeleteSpawn(object sender, DeleteSpawn spawn)
+    {
+        SpawnDeleteQueue.Add(spawn);        
+    }
     
+    void OnChannelMessage(object sender, ChannelMessage message)
+    {
+        Debug.Log("ChannelMessage from "+message.Sender + " to "+message.TargetName+" in chan " + message.ChannelNumber + ": " + message.Message);
+    }
+
+
+    void OnSpawnHPUpdate(object sender, SpawnHPUpdate hpUpdate)
+    {
+        SpawnHPUpdateQueue.Add(hpUpdate);
+    }
+
+    void OnPlayerPositionUpdateServer(object sender, PlayerPositionUpdateServer posUpdate)
+    {
+        PlayerPositionUpdateServerQueue.Add(posUpdate);
+    }
+
     private void Update()
     {
-        if (SpawnQueue.Count == 0) return;
-        foreach (var spawn in SpawnQueue)
+        for (int i = SpawnQueue.Count-1; i >= 0; i--)
         {
+            var spawn = SpawnQueue[i];
             if (SpawnPool.ContainsKey(spawn.SpawnID))
             {
                 //update previous entry
@@ -175,10 +213,57 @@ public class TestNetwork : MonoBehaviour {
             var obj = Instantiate(spawnPrefab, new Vector3(spawn.Position.X/1000, spawn.Position.Z / 1000, spawn.Position.Y / 1000), Quaternion.Euler(0, spawn.Position.Heading, 0), spawnPool.transform);
             var npc = obj.GetComponent<NPC>();
             npc.spawnData = spawn;
-            obj.name = spawn.Name;
+            
+            obj.name = "[" + spawn.Level + "] "+ spawn.CharType +" "+ spawn.Name + " "+((spawn.CharType == CharType.NPC) ? spawn.CurHP+"%" : "100%");
             SpawnPool.Add(spawn.SpawnID, obj);
+            SpawnQueue.RemoveAt(i);
         }
-        SpawnQueue.Clear();
+
+        for (int i = PlayerPositionUpdateServerQueue.Count - 1; i >= 0; i--)
+        { 
+            var posUpdate = PlayerPositionUpdateServerQueue[i];
+        
+            if (!SpawnPool.ContainsKey((uint)posUpdate.SpawnID)) continue;
+            var spawn = SpawnPool[(uint)posUpdate.SpawnID];            
+            Debug.Log("Updating position on " + spawn.name + "via ClientUpdate");
+            spawn.transform.position = new Vector3(posUpdate.X, posUpdate.Z, posUpdate.Y);
+            //var npc = spawn.GetComponent<NPC>();
+            //npc.spawnData.Position = posUpdate.Position;
+            PlayerPositionUpdateServerQueue.RemoveAt(i);
+        }
+
+        for (int i = SpawnDeleteQueue.Count - 1; i >= 0; i--)
+        {
+            var spawn = SpawnDeleteQueue[i];
+            if (!SpawnPool.ContainsKey(spawn.SpawnID)) continue;
+            Debug.Log("Deleting spawn " + SpawnPool[spawn.SpawnID].name + " ( do puff effect? " + spawn.Decay + ")");
+            GameObject.Destroy(SpawnPool[spawn.SpawnID]);
+            SpawnPool.Remove(spawn.SpawnID);
+            SpawnDeleteQueue.RemoveAt(i);
+        }
+
+        for (int i = SpawnHPUpdateQueue.Count - 1; i >= 0; i--)
+        {
+            var hpUpdate = SpawnHPUpdateQueue[i];
+            if (!SpawnPool.ContainsKey((uint)hpUpdate.SpawnID)) continue;
+            var spawn = SpawnPool[(uint)hpUpdate.SpawnID];
+            var npc = spawn.GetComponent<NPC>();
+            Debug.Log("Updating hp on "+spawn.name+" from "+npc.spawnData.CurHP+" to "+hpUpdate.CurrentHP+" curhp, "+hpUpdate.MaxHP+" maxhp");
+            SpawnHPUpdateQueue.RemoveAt(i);
+        }
+
+        for (int i = SpawnPositionUpdateQueue.Count - 1; i >= 0; i--)
+        {
+            var posUpdate = SpawnPositionUpdateQueue[i];
+            if (!SpawnPool.ContainsKey((uint)posUpdate.SpawnID)) continue;
+            var spawn = SpawnPool[(uint)posUpdate.SpawnID];
+            var npc = spawn.GetComponent<NPC>();
+            Debug.Log("Updating position on " + spawn.name);
+            spawn.transform.position = new Vector3(posUpdate.Position.X, posUpdate.Position.Z, posUpdate.Position.Y);
+            npc.spawnData.Position = posUpdate.Position;
+            SpawnPositionUpdateQueue.RemoveAt(i);
+        }
+        
     }
 
     void OnCharacterList(object sender, List<CharacterSelectEntry> chars)
@@ -265,7 +350,6 @@ public class TestNetwork : MonoBehaviour {
             InitializeZone();
     }
 
-
     public void DoWorldJoin()
     {
         //world.ResetAckForZone();
@@ -288,6 +372,11 @@ public class TestNetwork : MonoBehaviour {
     void InitializeZone()
     {
         zone.ZoneEntry += OnZoneEntry;
+        zone.DeleteSpawn += OnDeleteSpawn;
+        zone.ChannelMessage += OnChannelMessage;
+        zone.SpawnHPUpdate += OnSpawnHPUpdate;
+        zone.SpawnPositionUpdate += OnSpawnPositionUpdate;
+        zone.PlayerPositionUpdateServer += OnPlayerPositionUpdateServer;
     }
     
 	

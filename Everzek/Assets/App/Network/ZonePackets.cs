@@ -610,6 +610,74 @@ namespace OpenEQ.Network {
 		}
 	}
 
+	public struct SpawnHPUpdate : IEQStruct {
+		public uint CurrentHP;
+		public int MaxHP;
+		public short SpawnID;
+
+		public SpawnHPUpdate(uint CurrentHP, int MaxHP, short SpawnID) : this() {
+			this.CurrentHP = CurrentHP;
+			this.MaxHP = MaxHP;
+			this.SpawnID = SpawnID;
+		}
+
+		public SpawnHPUpdate(byte[] data, int offset = 0) : this() {
+			Unpack(data, offset);
+		}
+		public SpawnHPUpdate(BinaryReader br) : this() {
+			Unpack(br);
+		}
+		public void Unpack(byte[] data, int offset = 0) {
+			using(var ms = new MemoryStream(data, offset, data.Length - offset)) {
+				using(var br = new BinaryReader(ms)) {
+					Unpack(br);
+				}
+			}
+		}
+		public void Unpack(BinaryReader br) {
+			CurrentHP = br.ReadUInt32();
+			MaxHP = br.ReadInt32();
+			SpawnID = br.ReadInt16();
+		}
+
+		public byte[] Pack() {
+			using(var ms = new MemoryStream()) {
+				using(var bw = new BinaryWriter(ms)) {
+					Pack(bw);
+					return ms.ToArray();
+				}
+			}
+		}
+		public void Pack(BinaryWriter bw) {
+			bw.Write(CurrentHP);
+			bw.Write(MaxHP);
+			bw.Write(SpawnID);
+		}
+
+		public override string ToString() {
+			var ret = "struct SpawnHPUpdate {\n";
+			ret += "\tCurrentHP = ";
+			try {
+				ret += $"{ Indentify(CurrentHP) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tMaxHP = ";
+			try {
+				ret += $"{ Indentify(MaxHP) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tSpawnID = ";
+			try {
+				ret += $"{ Indentify(SpawnID) }\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			return ret + "}";
+		}
+	}
+
 	public struct ItemFaction : IEQStruct {
 		public uint Mod;
 		public int Amt;
@@ -661,6 +729,70 @@ namespace OpenEQ.Network {
 			ret += "\tAmt = ";
 			try {
 				ret += $"{ Indentify(Amt) }\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			return ret + "}";
+		}
+	}
+
+	public struct SpawnPositionUpdate : IEQStruct {
+		public ushort SpawnID;
+		public SpawnPosition Position;
+		ushort heading;
+		short padding010;
+
+		public SpawnPositionUpdate(ushort SpawnID, SpawnPosition Position) : this() {
+			this.SpawnID = SpawnID;
+			this.Position = Position;
+		}
+
+		public SpawnPositionUpdate(byte[] data, int offset = 0) : this() {
+			Unpack(data, offset);
+		}
+		public SpawnPositionUpdate(BinaryReader br) : this() {
+			Unpack(br);
+		}
+		public void Unpack(byte[] data, int offset = 0) {
+			using(var ms = new MemoryStream(data, offset, data.Length - offset)) {
+				using(var br = new BinaryReader(ms)) {
+					Unpack(br);
+				}
+			}
+		}
+		public void Unpack(BinaryReader br) {
+			SpawnID = br.ReadUInt16();
+			Position = new SpawnPosition(br);
+			heading = br.ReadUInt16();
+			padding010 = br.ReadInt16();
+		}
+
+		public byte[] Pack() {
+			using(var ms = new MemoryStream()) {
+				using(var bw = new BinaryWriter(ms)) {
+					Pack(bw);
+					return ms.ToArray();
+				}
+			}
+		}
+		public void Pack(BinaryWriter bw) {
+			bw.Write(SpawnID);
+			Position.Pack(bw);
+			bw.Write(heading);
+			bw.Write(padding010);
+		}
+
+		public override string ToString() {
+			var ret = "struct SpawnPositionUpdate {\n";
+			ret += "\tSpawnID = ";
+			try {
+				ret += $"{ Indentify(SpawnID) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tPosition = ";
+			try {
+				ret += $"{ Indentify(Position) },\n";
 			} catch(NullReferenceException) {
 				ret += "!!NULL!!\n";
 			}
@@ -1172,6 +1304,204 @@ namespace OpenEQ.Network {
 		}
 	}
 
+	public struct PlayerPositionUpdateServer : IEQStruct {
+		public ushort SpawnID;
+		public ushort SpawnID2;
+		public short Padding0004;
+		public short Y;
+		public ushort Padding01;
+		public short DeltaX;
+		public short DeltaHeading;
+		public short Padding0008;
+		public short DeltaY;
+		public short Z;
+		public short X;
+		public short Animation;
+		public short Padding0016;
+		public ushort Heading;
+		public short DeltaZ;
+		public short Padding0020;
+
+		public PlayerPositionUpdateServer(ushort SpawnID, ushort SpawnID2, short Padding0004, short Y, ushort Padding01, short DeltaX, short DeltaHeading, short Padding0008, short DeltaY, short Z, short X, short Animation, short Padding0016, ushort Heading, short DeltaZ, short Padding0020) : this() {
+			this.SpawnID = SpawnID;
+			this.SpawnID2 = SpawnID2;
+			this.Padding0004 = Padding0004;
+			this.Y = Y;
+			this.Padding01 = Padding01;
+			this.DeltaX = DeltaX;
+			this.DeltaHeading = DeltaHeading;
+			this.Padding0008 = Padding0008;
+			this.DeltaY = DeltaY;
+			this.Z = Z;
+			this.X = X;
+			this.Animation = Animation;
+			this.Padding0016 = Padding0016;
+			this.Heading = Heading;
+			this.DeltaZ = DeltaZ;
+			this.Padding0020 = Padding0020;
+		}
+
+		public PlayerPositionUpdateServer(byte[] data, int offset = 0) : this() {
+			Unpack(data, offset);
+		}
+		public PlayerPositionUpdateServer(BinaryReader br) : this() {
+			Unpack(br);
+		}
+		public void Unpack(byte[] data, int offset = 0) {
+			using(var ms = new MemoryStream(data, offset, data.Length - offset)) {
+				using(var br = new BinaryReader(ms)) {
+					Unpack(br);
+				}
+			}
+		}
+		public void Unpack(BinaryReader br) {
+			SpawnID = br.ReadUInt16();
+			SpawnID2 = br.ReadUInt16();
+			Padding0004 = br.ReadInt16();
+			Y = br.ReadInt16();
+			Padding01 = br.ReadUInt16();
+			DeltaX = br.ReadInt16();
+			DeltaHeading = br.ReadInt16();
+			Padding0008 = br.ReadInt16();
+			DeltaY = br.ReadInt16();
+			Z = br.ReadInt16();
+			X = br.ReadInt16();
+			Animation = br.ReadInt16();
+			Padding0016 = br.ReadInt16();
+			Heading = br.ReadUInt16();
+			DeltaZ = br.ReadInt16();
+			Padding0020 = br.ReadInt16();
+		}
+
+		public byte[] Pack() {
+			using(var ms = new MemoryStream()) {
+				using(var bw = new BinaryWriter(ms)) {
+					Pack(bw);
+					return ms.ToArray();
+				}
+			}
+		}
+		public void Pack(BinaryWriter bw) {
+			bw.Write(SpawnID);
+			bw.Write(SpawnID2);
+			bw.Write(Padding0004);
+			bw.Write(Y);
+			bw.Write(Padding01);
+			bw.Write(DeltaX);
+			bw.Write(DeltaHeading);
+			bw.Write(Padding0008);
+			bw.Write(DeltaY);
+			bw.Write(Z);
+			bw.Write(X);
+			bw.Write(Animation);
+			bw.Write(Padding0016);
+			bw.Write(Heading);
+			bw.Write(DeltaZ);
+			bw.Write(Padding0020);
+		}
+
+		public override string ToString() {
+			var ret = "struct PlayerPositionUpdateServer {\n";
+			ret += "\tSpawnID = ";
+			try {
+				ret += $"{ Indentify(SpawnID) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tSpawnID2 = ";
+			try {
+				ret += $"{ Indentify(SpawnID2) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tPadding0004 = ";
+			try {
+				ret += $"{ Indentify(Padding0004) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tY = ";
+			try {
+				ret += $"{ Indentify(Y) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tPadding01 = ";
+			try {
+				ret += $"{ Indentify(Padding01) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tDeltaX = ";
+			try {
+				ret += $"{ Indentify(DeltaX) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tDeltaHeading = ";
+			try {
+				ret += $"{ Indentify(DeltaHeading) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tPadding0008 = ";
+			try {
+				ret += $"{ Indentify(Padding0008) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tDeltaY = ";
+			try {
+				ret += $"{ Indentify(DeltaY) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tZ = ";
+			try {
+				ret += $"{ Indentify(Z) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tX = ";
+			try {
+				ret += $"{ Indentify(X) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tAnimation = ";
+			try {
+				ret += $"{ Indentify(Animation) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tPadding0016 = ";
+			try {
+				ret += $"{ Indentify(Padding0016) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tHeading = ";
+			try {
+				ret += $"{ Indentify(Heading) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tDeltaZ = ";
+			try {
+				ret += $"{ Indentify(DeltaZ) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tPadding0020 = ";
+			try {
+				ret += $"{ Indentify(Padding0020) }\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			return ret + "}";
+		}
+	}
+
 	public struct Autoconsent : IEQStruct {
 		public bool Group;
 		public bool Raid;
@@ -1240,33 +1570,19 @@ namespace OpenEQ.Network {
 		}
 	}
 
-	public struct TintProfile : IEQStruct {
-		public Tint Head;
-		public Tint Chest;
-		public Tint Arms;
-		public Tint Wrist;
-		public Tint Hands;
-		public Tint Legs;
-		public Tint Feet;
-		public Tint Primary;
-		public Tint Secondary;
+	public struct DeleteSpawn : IEQStruct {
+		public uint SpawnID;
+		public byte Decay;
 
-		public TintProfile(Tint Head, Tint Chest, Tint Arms, Tint Wrist, Tint Hands, Tint Legs, Tint Feet, Tint Primary, Tint Secondary) : this() {
-			this.Head = Head;
-			this.Chest = Chest;
-			this.Arms = Arms;
-			this.Wrist = Wrist;
-			this.Hands = Hands;
-			this.Legs = Legs;
-			this.Feet = Feet;
-			this.Primary = Primary;
-			this.Secondary = Secondary;
+		public DeleteSpawn(uint SpawnID, byte Decay) : this() {
+			this.SpawnID = SpawnID;
+			this.Decay = Decay;
 		}
 
-		public TintProfile(byte[] data, int offset = 0) : this() {
+		public DeleteSpawn(byte[] data, int offset = 0) : this() {
 			Unpack(data, offset);
 		}
-		public TintProfile(BinaryReader br) : this() {
+		public DeleteSpawn(BinaryReader br) : this() {
 			Unpack(br);
 		}
 		public void Unpack(byte[] data, int offset = 0) {
@@ -1277,15 +1593,8 @@ namespace OpenEQ.Network {
 			}
 		}
 		public void Unpack(BinaryReader br) {
-			Head = new Tint(br);
-			Chest = new Tint(br);
-			Arms = new Tint(br);
-			Wrist = new Tint(br);
-			Hands = new Tint(br);
-			Legs = new Tint(br);
-			Feet = new Tint(br);
-			Primary = new Tint(br);
-			Secondary = new Tint(br);
+			SpawnID = br.ReadUInt32();
+			Decay = br.ReadByte();
 		}
 
 		public byte[] Pack() {
@@ -1297,70 +1606,21 @@ namespace OpenEQ.Network {
 			}
 		}
 		public void Pack(BinaryWriter bw) {
-			Head.Pack(bw);
-			Chest.Pack(bw);
-			Arms.Pack(bw);
-			Wrist.Pack(bw);
-			Hands.Pack(bw);
-			Legs.Pack(bw);
-			Feet.Pack(bw);
-			Primary.Pack(bw);
-			Secondary.Pack(bw);
+			bw.Write(SpawnID);
+			bw.Write(Decay);
 		}
 
 		public override string ToString() {
-			var ret = "struct TintProfile {\n";
-			ret += "\tHead = ";
+			var ret = "struct DeleteSpawn {\n";
+			ret += "\tSpawnID = ";
 			try {
-				ret += $"{ Indentify(Head) },\n";
+				ret += $"{ Indentify(SpawnID) },\n";
 			} catch(NullReferenceException) {
 				ret += "!!NULL!!\n";
 			}
-			ret += "\tChest = ";
+			ret += "\tDecay = ";
 			try {
-				ret += $"{ Indentify(Chest) },\n";
-			} catch(NullReferenceException) {
-				ret += "!!NULL!!\n";
-			}
-			ret += "\tArms = ";
-			try {
-				ret += $"{ Indentify(Arms) },\n";
-			} catch(NullReferenceException) {
-				ret += "!!NULL!!\n";
-			}
-			ret += "\tWrist = ";
-			try {
-				ret += $"{ Indentify(Wrist) },\n";
-			} catch(NullReferenceException) {
-				ret += "!!NULL!!\n";
-			}
-			ret += "\tHands = ";
-			try {
-				ret += $"{ Indentify(Hands) },\n";
-			} catch(NullReferenceException) {
-				ret += "!!NULL!!\n";
-			}
-			ret += "\tLegs = ";
-			try {
-				ret += $"{ Indentify(Legs) },\n";
-			} catch(NullReferenceException) {
-				ret += "!!NULL!!\n";
-			}
-			ret += "\tFeet = ";
-			try {
-				ret += $"{ Indentify(Feet) },\n";
-			} catch(NullReferenceException) {
-				ret += "!!NULL!!\n";
-			}
-			ret += "\tPrimary = ";
-			try {
-				ret += $"{ Indentify(Primary) },\n";
-			} catch(NullReferenceException) {
-				ret += "!!NULL!!\n";
-			}
-			ret += "\tSecondary = ";
-			try {
-				ret += $"{ Indentify(Secondary) }\n";
+				ret += $"{ Indentify(Decay) }\n";
 			} catch(NullReferenceException) {
 				ret += "!!NULL!!\n";
 			}
@@ -3681,6 +3941,154 @@ namespace OpenEQ.Network {
 		}
 	}
 
+	public struct PlayerPositionUpdateClient : IEQStruct {
+		public ushort SpawnID;
+		public ushort Sequence;
+		public float Y;
+		public float DeltaZ;
+		public float DeltaX;
+		public float DeltaY;
+		public int Animation;
+		public float X;
+		public float Z;
+		public ushort Heading;
+		public byte Uknown0006;
+
+		public PlayerPositionUpdateClient(ushort SpawnID, ushort Sequence, float Y, float DeltaZ, float DeltaX, float DeltaY, int Animation, float X, float Z, ushort Heading, byte Uknown0006) : this() {
+			this.SpawnID = SpawnID;
+			this.Sequence = Sequence;
+			this.Y = Y;
+			this.DeltaZ = DeltaZ;
+			this.DeltaX = DeltaX;
+			this.DeltaY = DeltaY;
+			this.Animation = Animation;
+			this.X = X;
+			this.Z = Z;
+			this.Heading = Heading;
+			this.Uknown0006 = Uknown0006;
+		}
+
+		public PlayerPositionUpdateClient(byte[] data, int offset = 0) : this() {
+			Unpack(data, offset);
+		}
+		public PlayerPositionUpdateClient(BinaryReader br) : this() {
+			Unpack(br);
+		}
+		public void Unpack(byte[] data, int offset = 0) {
+			using(var ms = new MemoryStream(data, offset, data.Length - offset)) {
+				using(var br = new BinaryReader(ms)) {
+					Unpack(br);
+				}
+			}
+		}
+		public void Unpack(BinaryReader br) {
+			SpawnID = br.ReadUInt16();
+			Sequence = br.ReadUInt16();
+			Y = br.ReadSingle();
+			DeltaZ = br.ReadSingle();
+			DeltaX = br.ReadSingle();
+			DeltaY = br.ReadSingle();
+			Animation = br.ReadInt32();
+			X = br.ReadSingle();
+			Z = br.ReadSingle();
+			Heading = br.ReadUInt16();
+			Uknown0006 = br.ReadByte();
+		}
+
+		public byte[] Pack() {
+			using(var ms = new MemoryStream()) {
+				using(var bw = new BinaryWriter(ms)) {
+					Pack(bw);
+					return ms.ToArray();
+				}
+			}
+		}
+		public void Pack(BinaryWriter bw) {
+			bw.Write(SpawnID);
+			bw.Write(Sequence);
+			bw.Write(Y);
+			bw.Write(DeltaZ);
+			bw.Write(DeltaX);
+			bw.Write(DeltaY);
+			bw.Write(Animation);
+			bw.Write(X);
+			bw.Write(Z);
+			bw.Write(Heading);
+			bw.Write(Uknown0006);
+		}
+
+		public override string ToString() {
+			var ret = "struct PlayerPositionUpdateClient {\n";
+			ret += "\tSpawnID = ";
+			try {
+				ret += $"{ Indentify(SpawnID) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tSequence = ";
+			try {
+				ret += $"{ Indentify(Sequence) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tY = ";
+			try {
+				ret += $"{ Indentify(Y) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tDeltaZ = ";
+			try {
+				ret += $"{ Indentify(DeltaZ) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tDeltaX = ";
+			try {
+				ret += $"{ Indentify(DeltaX) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tDeltaY = ";
+			try {
+				ret += $"{ Indentify(DeltaY) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tAnimation = ";
+			try {
+				ret += $"{ Indentify(Animation) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tX = ";
+			try {
+				ret += $"{ Indentify(X) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tZ = ";
+			try {
+				ret += $"{ Indentify(Z) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tHeading = ";
+			try {
+				ret += $"{ Indentify(Heading) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tUknown0006 = ";
+			try {
+				ret += $"{ Indentify(Uknown0006) }\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			return ret + "}";
+		}
+	}
+
 	public struct PVPStats : IEQStruct {
 		public uint Kills;
 		public uint Deaths;
@@ -5208,6 +5616,64 @@ namespace OpenEQ.Network {
 		}
 	}
 
+	public struct SpawnHPUpdate2 : IEQStruct {
+		public short SpawnID;
+		public byte HPPercent;
+
+		public SpawnHPUpdate2(short SpawnID, byte HPPercent) : this() {
+			this.SpawnID = SpawnID;
+			this.HPPercent = HPPercent;
+		}
+
+		public SpawnHPUpdate2(byte[] data, int offset = 0) : this() {
+			Unpack(data, offset);
+		}
+		public SpawnHPUpdate2(BinaryReader br) : this() {
+			Unpack(br);
+		}
+		public void Unpack(byte[] data, int offset = 0) {
+			using(var ms = new MemoryStream(data, offset, data.Length - offset)) {
+				using(var br = new BinaryReader(ms)) {
+					Unpack(br);
+				}
+			}
+		}
+		public void Unpack(BinaryReader br) {
+			SpawnID = br.ReadInt16();
+			HPPercent = br.ReadByte();
+		}
+
+		public byte[] Pack() {
+			using(var ms = new MemoryStream()) {
+				using(var bw = new BinaryWriter(ms)) {
+					Pack(bw);
+					return ms.ToArray();
+				}
+			}
+		}
+		public void Pack(BinaryWriter bw) {
+			bw.Write(SpawnID);
+			bw.Write(HPPercent);
+		}
+
+		public override string ToString() {
+			var ret = "struct SpawnHPUpdate2 {\n";
+			ret += "\tSpawnID = ";
+			try {
+				ret += $"{ Indentify(SpawnID) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tHPPercent = ";
+			try {
+				ret += $"{ Indentify(HPPercent) }\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			return ret + "}";
+		}
+	}
+
 	public struct TaskActivity : IEQStruct {
 		public uint SequenceNumber;
 		public uint TaskID;
@@ -6368,6 +6834,134 @@ namespace OpenEQ.Network {
 		}
 	}
 
+	public struct TintProfile : IEQStruct {
+		public Tint Head;
+		public Tint Chest;
+		public Tint Arms;
+		public Tint Wrist;
+		public Tint Hands;
+		public Tint Legs;
+		public Tint Feet;
+		public Tint Primary;
+		public Tint Secondary;
+
+		public TintProfile(Tint Head, Tint Chest, Tint Arms, Tint Wrist, Tint Hands, Tint Legs, Tint Feet, Tint Primary, Tint Secondary) : this() {
+			this.Head = Head;
+			this.Chest = Chest;
+			this.Arms = Arms;
+			this.Wrist = Wrist;
+			this.Hands = Hands;
+			this.Legs = Legs;
+			this.Feet = Feet;
+			this.Primary = Primary;
+			this.Secondary = Secondary;
+		}
+
+		public TintProfile(byte[] data, int offset = 0) : this() {
+			Unpack(data, offset);
+		}
+		public TintProfile(BinaryReader br) : this() {
+			Unpack(br);
+		}
+		public void Unpack(byte[] data, int offset = 0) {
+			using(var ms = new MemoryStream(data, offset, data.Length - offset)) {
+				using(var br = new BinaryReader(ms)) {
+					Unpack(br);
+				}
+			}
+		}
+		public void Unpack(BinaryReader br) {
+			Head = new Tint(br);
+			Chest = new Tint(br);
+			Arms = new Tint(br);
+			Wrist = new Tint(br);
+			Hands = new Tint(br);
+			Legs = new Tint(br);
+			Feet = new Tint(br);
+			Primary = new Tint(br);
+			Secondary = new Tint(br);
+		}
+
+		public byte[] Pack() {
+			using(var ms = new MemoryStream()) {
+				using(var bw = new BinaryWriter(ms)) {
+					Pack(bw);
+					return ms.ToArray();
+				}
+			}
+		}
+		public void Pack(BinaryWriter bw) {
+			Head.Pack(bw);
+			Chest.Pack(bw);
+			Arms.Pack(bw);
+			Wrist.Pack(bw);
+			Hands.Pack(bw);
+			Legs.Pack(bw);
+			Feet.Pack(bw);
+			Primary.Pack(bw);
+			Secondary.Pack(bw);
+		}
+
+		public override string ToString() {
+			var ret = "struct TintProfile {\n";
+			ret += "\tHead = ";
+			try {
+				ret += $"{ Indentify(Head) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tChest = ";
+			try {
+				ret += $"{ Indentify(Chest) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tArms = ";
+			try {
+				ret += $"{ Indentify(Arms) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tWrist = ";
+			try {
+				ret += $"{ Indentify(Wrist) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tHands = ";
+			try {
+				ret += $"{ Indentify(Hands) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tLegs = ";
+			try {
+				ret += $"{ Indentify(Legs) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tFeet = ";
+			try {
+				ret += $"{ Indentify(Feet) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tPrimary = ";
+			try {
+				ret += $"{ Indentify(Primary) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tSecondary = ";
+			try {
+				ret += $"{ Indentify(Secondary) }\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			return ret + "}";
+		}
+	}
+
 	public struct Weather : IEQStruct {
 		public uint Val1;
 		public WeatherType Type;
@@ -6519,6 +7113,104 @@ namespace OpenEQ.Network {
 			ret += "\tClass = ";
 			try {
 				ret += $"{ Indentify(Class) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			return ret + "}";
+		}
+	}
+
+	public struct ChannelMessage : IEQStruct {
+		public string TargetName;
+		public string Sender;
+		public uint Language;
+		public uint ChannelNumber;
+		public uint SkillInLanguage;
+		public string Message;
+
+		public ChannelMessage(string TargetName, string Sender, uint Language, uint ChannelNumber, uint SkillInLanguage, string Message) : this() {
+			this.TargetName = TargetName;
+			this.Sender = Sender;
+			this.Language = Language;
+			this.ChannelNumber = ChannelNumber;
+			this.SkillInLanguage = SkillInLanguage;
+			this.Message = Message;
+		}
+
+		public ChannelMessage(byte[] data, int offset = 0) : this() {
+			Unpack(data, offset);
+		}
+		public ChannelMessage(BinaryReader br) : this() {
+			Unpack(br);
+		}
+		public void Unpack(byte[] data, int offset = 0) {
+			using(var ms = new MemoryStream(data, offset, data.Length - offset)) {
+				using(var br = new BinaryReader(ms)) {
+					Unpack(br);
+				}
+			}
+		}
+		public void Unpack(BinaryReader br) {
+			TargetName = br.ReadString(64);
+			Sender = br.ReadString(64);
+			Language = br.ReadUInt32();
+			ChannelNumber = br.ReadUInt32();
+			SkillInLanguage = br.ReadUInt32();
+			Message = br.ReadString(-1);
+		}
+
+		public byte[] Pack() {
+			using(var ms = new MemoryStream()) {
+				using(var bw = new BinaryWriter(ms)) {
+					Pack(bw);
+					return ms.ToArray();
+				}
+			}
+		}
+		public void Pack(BinaryWriter bw) {
+			bw.Write(TargetName.ToBytes(64));
+			bw.Write(Sender.ToBytes(64));
+			bw.Write(Language);
+			bw.Write(ChannelNumber);
+			bw.Write(SkillInLanguage);
+			bw.Write(Message.ToBytes());
+		}
+
+		public override string ToString() {
+			var ret = "struct ChannelMessage {\n";
+			ret += "\tTargetName = ";
+			try {
+				ret += $"{ Indentify(TargetName) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tSender = ";
+			try {
+				ret += $"{ Indentify(Sender) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tLanguage = ";
+			try {
+				ret += $"{ Indentify(Language) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tChannelNumber = ";
+			try {
+				ret += $"{ Indentify(ChannelNumber) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tSkillInLanguage = ";
+			try {
+				ret += $"{ Indentify(SkillInLanguage) },\n";
+			} catch(NullReferenceException) {
+				ret += "!!NULL!!\n";
+			}
+			ret += "\tMessage = ";
+			try {
+				ret += $"{ Indentify(Message) }\n";
 			} catch(NullReferenceException) {
 				ret += "!!NULL!!\n";
 			}
