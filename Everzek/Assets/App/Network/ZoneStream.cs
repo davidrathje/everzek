@@ -9,6 +9,9 @@ namespace OpenEQ.Network {
         string charName;
         bool entering = true;
 
+
+        public event EventHandler<Spawn> ZoneEntry;
+
         public ZoneStream(string host, int port, string charName) : base(host, port) {
             SendKeepalives = true;
             this.charName = charName;
@@ -81,7 +84,8 @@ namespace OpenEQ.Network {
 
                 case ZoneOp.ZoneEntry:
                     var mob = packet.Get<Spawn>();
-                    UnityEngine.Debug.Log(mob);
+                    ZoneEntry.Invoke(this, mob);
+                    //UnityEngine.Debug.Log(mob);
                     break;
 
                 case ZoneOp.NewZone:
@@ -102,7 +106,24 @@ namespace OpenEQ.Network {
                     break;
 
                 case ZoneOp.ClientUpdate:
-                   UnityEngine.Debug.Log("ClientUpdate");
+                  // UnityEngine.Debug.Log("ClientUpdate");
+                    break;
+                case ZoneOp.SpawnAppearance:
+                    break;
+                case ZoneOp.Stamina:
+                    break;
+                case ZoneOp.SpecialMesg:
+                    break;
+                case ZoneOp.Death:
+                    break;
+                case ZoneOp.DeleteSpawn:
+                    break;
+
+                case ZoneOp.PlayerStateAdd:
+                    break;
+                case ZoneOp.PlayerStateRemove:
+                    break;
+                case ZoneOp.ChannelMessage:
                     break;
 
                 case ZoneOp.HPUpdate:

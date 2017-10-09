@@ -9,7 +9,10 @@ public class TestNetwork : MonoBehaviour {
     LoginStream login;
     WorldStream world;
     ZoneStream zone;
-    
+
+    public GameObject spawnPrefab;
+    public GameObject spawnPool;
+
     bool isInitialized = false;
 
     public CharacterSelectEntry characterSelected;
@@ -22,6 +25,10 @@ public class TestNetwork : MonoBehaviour {
     public string ServerToJoin = "[R] RebuildEQ.com - Check forums to be a tester!";
     //or, [R] Shin's RebuildEQ TEST Server
     public string CharacterName = "";
+    
+
+    public Dictionary<uint, GameObject> SpawnPool = new Dictionary<uint, GameObject>();
+    public List<Spawn> SpawnQueue = new List<Spawn>();
 
 
     // Use this for initialization
@@ -34,6 +41,7 @@ public class TestNetwork : MonoBehaviour {
         }
         login = new LoginStream(LoginUrl, LoginPort);
         Debug.Log("Logging in..");
+        
         login.Login(Username, Password);
         login.LoginSuccess += OnLoginSuccess;
         login.ServerList += OnServerList;
@@ -72,7 +80,7 @@ public class TestNetwork : MonoBehaviour {
                 Debug.Log("Joining " + ServerToJoin);
                 if (serverSelected.WorldIP.Equals("127.0.0.1")) {
                     Debug.Log("Changing world IP since it's localhost");
-                    serverSelected.WorldIP = "70.189.224.166";
+                    serverSelected.WorldIP = "192.168.1.100";
                 }
                 login.Play(serverSelected);
             }
@@ -143,9 +151,34 @@ public class TestNetwork : MonoBehaviour {
 
         if (zone != null)
         {
+            zone.ZoneEntry -= OnZoneEntry;
             zone.Disconnect();
         }
         zone = null;        
+    }
+
+    void OnZoneEntry(object sender, Spawn spawn)
+    {
+        SpawnQueue.Add(spawn);
+    }
+    
+    private void Update()
+    {
+        if (SpawnQueue.Count == 0) return;
+        foreach (var spawn in SpawnQueue)
+        {
+            if (SpawnPool.ContainsKey(spawn.SpawnID))
+            {
+                //update previous entry
+                continue;
+            }
+            var obj = Instantiate(spawnPrefab, new Vector3(spawn.Position.X/1000, spawn.Position.Z / 1000, spawn.Position.Y / 1000), Quaternion.Euler(0, spawn.Position.Heading, 0), spawnPool.transform);
+            var npc = obj.GetComponent<NPC>();
+            npc.spawnData = spawn;
+            obj.name = spawn.Name;
+            SpawnPool.Add(spawn.SpawnID, obj);
+        }
+        SpawnQueue.Clear();
     }
 
     void OnCharacterList(object sender, List<CharacterSelectEntry> chars)
@@ -232,6 +265,7 @@ public class TestNetwork : MonoBehaviour {
             InitializeZone();
     }
 
+
     public void DoWorldJoin()
     {
         //world.ResetAckForZone();
@@ -253,6 +287,7 @@ public class TestNetwork : MonoBehaviour {
 
     void InitializeZone()
     {
+        zone.ZoneEntry += OnZoneEntry;
     }
     
 	
