@@ -95,12 +95,15 @@ namespace OpenEQ.Network
                     var resp = packet.Get<PlayResponse>();
 
                     if (!resp.Allowed)
+                    {
+                        UnityEngine.Debug.LogError("Response flagged Allowed false");
                         curPlay = null;
+                    }
 
                     PlaySuccess?.Invoke(this, curPlay);
                     break;
                 default:
-                    WriteLine($"Unhandled packet in LoginStream: {(LoginOp) packet.Opcode} (0x{packet.Opcode:X04})");
+                    UnityEngine.Debug.Log($"Unhandled packet in LoginStream: {(LoginOp) packet.Opcode} (0x{packet.Opcode:X04})");
                     Hexdump(packet.Data);
                     break;
             }

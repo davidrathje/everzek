@@ -71,13 +71,13 @@ namespace OpenEQ.Network {
                                 break;
                             if(Time.Now - packet.SentTime > 2) {
                                 if(Debug)
-                                    WriteLine($"Packet {packet.Sequence} not acked in {Time.Now - packet.SentTime}; resending.");
+                                    UnityEngine.Debug.Log($"Packet {packet.Sequence} not acked in {Time.Now - packet.SentTime}; resending.");
                                 Send(packet);
                             }
                         }
                         if(lastAckSent != InSequence) {
                             if(Debug)
-                                WriteLine($"ACKing up to {(ushort) ((InSequence + 65536 - 1) % 65536)}");
+                                UnityEngine.Debug.Log($"ACKing up to {(ushort) ((InSequence + 65536 - 1) % 65536)}");
                             Send(Packet.Create(SessionOp.Ack, sequence: (ushort) ((InSequence + 65536 - 1) % 65536)));
                             lastAckSent = InSequence;
                         } else if(resendAck) {
@@ -87,7 +87,7 @@ namespace OpenEQ.Network {
                     }
                 }
                 if(SendKeepalives && Time.Now - lastRecvSendTime > 5) {
-                    WriteLine("Sending keepalive");
+                    UnityEngine.Debug.Log("Sending keepalive");
                     Send(Packet.Create(SessionOp.Ack, sequence: (ushort) ((lastAckSent + 65536 - 1) % 65536)));
                 }
                 await Task.Delay(100);
@@ -102,7 +102,7 @@ namespace OpenEQ.Network {
 
                 if(Debug) {
                     ForegroundColor = ConsoleColor.DarkMagenta;
-                    WriteLine($"Received packet ({this})");
+                    UnityEngine.Debug.Log($"Received packet ({this})");
                     Hexdump(data);
                     ResetColor();
                 }
@@ -152,7 +152,7 @@ namespace OpenEQ.Network {
                     break;
                 default:
                     if(Debug) {
-                        WriteLine($"Unknown packet received: {op} (0x{packet.Opcode:X04})");
+                        UnityEngine.Debug.Log($"Unknown packet received: {op} (0x{packet.Opcode:X04})");
                         Hexdump(packet.Data);
                     }
                     break;
@@ -169,7 +169,7 @@ namespace OpenEQ.Network {
                         ProcessPacket(futurePackets[InSequence]);
                 } else if((packet.Sequence < InSequence && InSequence - packet.Sequence < 2048) || packet.Sequence - (InSequence + 65536) < 2048) { // Past
                     if(Debug)
-                        WriteLine($"Got packet in the past... expect {InSequence} got {packet.Sequence}.  Sending ACK up to {(ushort) ((InSequence + 65536) % 65536)}");
+                        UnityEngine.Debug.Log($"Got packet in the past... expect {InSequence} got {packet.Sequence}.  Sending ACK up to {(ushort) ((InSequence + 65536) % 65536)}");
                     resendAck = true;
                 }
             }
@@ -178,9 +178,9 @@ namespace OpenEQ.Network {
         void HandleAppPacketProxy(AppPacket packet) {
             if(Debug) {
                 ForegroundColor = ConsoleColor.Magenta;
-                WriteLine($"Received app packet (opcode {packet.Opcode:X04}, {this}):");
+                UnityEngine.Debug.Log($"Received app packet (opcode {packet.Opcode:X04}, {this}):");
                 if(packet.Data == null)
-                    WriteLine("!Null data!");
+                    UnityEngine.Debug.Log("!Null data!");
                 else
                     Hexdump(packet.Data);
                 ResetColor();
@@ -197,7 +197,7 @@ namespace OpenEQ.Network {
                     HandleAppPacketProxy(app);
                     InSequence = (ushort) ((packet.Sequence + 1) % 65536);
                     if(Debug)
-                        WriteLine($"Single packet updated sequence from {packet.Sequence} to {InSequence}");
+                        UnityEngine.Debug.Log($"Single packet updated sequence from {packet.Sequence} to {InSequence}");
                     break;
                 case SessionOp.Fragment:
                     var tlen = packet.Data.NetU32(0);
@@ -221,7 +221,7 @@ namespace OpenEQ.Network {
                     }
                     InSequence = (ushort) ((last + 1) % 65536);
                     if(Debug)
-                        WriteLine($"Fragmented packet updated our sequence from {packet.Sequence} to {InSequence} ({last - packet.Sequence} packets)");
+                        UnityEngine.Debug.Log($"Fragmented packet updated our sequence from {packet.Sequence} to {InSequence} ({last - packet.Sequence} packets)");
                     HandleAppPacketProxy(new AppPacket(tdata));
                     break;
             }
@@ -241,13 +241,13 @@ namespace OpenEQ.Network {
             packet.SentTime = Time.Now;
             var data = packet.Bake(this);
             if(data.Length > 512) {
-                WriteLine("Overlong packet!");
+                UnityEngine.Debug.Log("Overlong packet!");
                 Hexdump(data);
             }
 
             if(Debug) {
                 ForegroundColor = ConsoleColor.DarkGreen;
-                WriteLine($"Sending connection packet (from {this}):");
+                UnityEngine.Debug.Log($"Sending connection packet (from {this}):");
                 Hexdump(data);
                 ResetColor();
             }
@@ -257,13 +257,13 @@ namespace OpenEQ.Network {
 
         protected void Send(AppPacket packet) {
             if(packet.Size > 512 - 7) { // Fragment
-                WriteLine("Fragment :(");
+                UnityEngine.Debug.Log("Fragment :(");
             } else {
                 if(Debug) {
                     ForegroundColor = ConsoleColor.Green;
-                    WriteLine($"Sending app packet (opcode {packet.Opcode:X04}, {this}):");
+                    UnityEngine.Debug.Log($"Sending app packet (opcode {packet.Opcode:X04}, {this}):");
                     if(packet.Data == null)
-                        WriteLine("!Null data!");
+                        UnityEngine.Debug.Log("!Null data!");
                     else
                         Hexdump(packet.Data);
                     ResetColor();

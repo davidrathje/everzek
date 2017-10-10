@@ -31,9 +31,9 @@ namespace OpenEQ.Network {
                         }
                     }
                     Write("| ");
-                    WriteLine(chars);
+                    //UnityEngine.Debug.Log(chars);
                 }
-                WriteLine($"{data.Length:X04}");
+              //  UnityEngine.Debug.Log($"{data.Length:X04}");
             }
         }
 

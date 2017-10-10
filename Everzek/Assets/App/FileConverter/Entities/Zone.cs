@@ -47,7 +47,7 @@
         {
             if (!ZoneObjectsByName.ContainsKey(objName))
             {
-                Console.WriteLine($"Could not place object {objName}.  It was not found in the Zone's list of objects.");
+                UnityEngine.Debug.Log($"Could not place object {objName}.  It was not found in the Zone's list of objects.");
                 return;
             }
 

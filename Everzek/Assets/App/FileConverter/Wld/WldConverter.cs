@@ -89,7 +89,7 @@ namespace OpenEQ.FileConverter.Wld
                 names = nnames;
                 baked = true;
 
-                //Console.WriteLine(
+                //Console.UnityEngine.Debug.Log(
                 //    $"fragtypes ({byType.Keys.Count}): {byType.Aggregate("", (current, v) => current + $",'{v.Key:X2}'").TrimStart(',')}");
             }
         }
@@ -566,7 +566,7 @@ namespace OpenEQ.FileConverter.Wld
                     //case 0x21: // BSP Tree
                     //    break;
                     default:
-                        Console.WriteLine($"Unsupported fragment type: {fragHeader.type}");
+                       UnityEngine.Debug.Log($"Unsupported fragment type: {fragHeader.type}");
                         break;
                 }
 
@@ -588,10 +588,10 @@ namespace OpenEQ.FileConverter.Wld
             }
 
             sw.Stop();
-            //Console.WriteLine($"{sw.Elapsed}, {sw.ElapsedMilliseconds}, {sw.ElapsedTicks}");
+            //Console.UnityEngine.Debug.Log($"{sw.Elapsed}, {sw.ElapsedMilliseconds}, {sw.ElapsedTicks}");
             //foreach (var f in foo)
             //{
-            //    Console.WriteLine($"{f.Key} :: {f.Value}");
+            //    Console.UnityEngine.Debug.Log($"{f.Key} :: {f.Value}");
             //}
         }
 

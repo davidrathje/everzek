@@ -76,15 +76,15 @@ public class TestNetwork : MonoBehaviour {
        
         foreach (var server in list)
         {
-            Debug.Log(server.Longname + " - " + server.WorldIP);
+            //Debug.Log(server.Longname + " - " + server.WorldIP);
             if (server.Longname.Equals(ServerToJoin))
             {
                 serverSelected = server;
-                Debug.Log("Joining " + ServerToJoin);
-                if (serverSelected.WorldIP.Equals("127.0.0.1")) {
+                Debug.Log("Joining " + ServerToJoin + server);
+                /*if (serverSelected.WorldIP.Equals("127.0.0.1")) {
                     Debug.Log("Changing world IP since it's localhost");
                     serverSelected.WorldIP = "192.168.1.100";
-                }
+                }*/
                 login.Play(serverSelected);
             }
             //Debug.Log(server.Longname);
@@ -105,7 +105,7 @@ public class TestNetwork : MonoBehaviour {
             serverGrid.Children.Add(serverButton);
             serverButton.Click += (s, e) => {
                 ((Button)s).IsEnabled = false;
-                Console.WriteLine($"Sending play request for {server.Longname}");
+                Console.UnityEngine.Debug.Log($"Sending play request for {server.Longname}");
                 login.Play(server);
             };*/
         }
@@ -202,6 +202,8 @@ public class TestNetwork : MonoBehaviour {
 
     private void Update()
     {
+        if (zone == null) return;
+
         for (int i = SpawnQueue.Count-1; i >= 0; i--)
         {
             var spawn = SpawnQueue[i];
@@ -343,7 +345,7 @@ public class TestNetwork : MonoBehaviour {
 
     void OnZoneServer(object sender, ZoneServerInfo server)
     {
-            //WriteLine($"Zone server info: {server.Host}:{server.Port}");
+            //UnityEngine.Debug.Log($"Zone server info: {server.Host}:{server.Port}");
 
             Debug.Log("Connecting to zone " + server.Host + ", " + server.Port + ", as character " + CharacterName);
             zone = new ZoneStream(server.Host, server.Port, CharacterName);
@@ -352,6 +354,12 @@ public class TestNetwork : MonoBehaviour {
 
     public void DoWorldJoin()
     {
+        if (world == null)
+        {
+            Debug.LogError("World isn't ready to join yet");
+            return;
+        }
+
         //world.ResetAckForZone();
         world.SendEnterWorld(new EnterWorld
         {
